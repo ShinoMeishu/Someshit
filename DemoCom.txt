@@ -1,0 +1,98 @@
+Задание 1:
+> ip address
+> nano /etc/network/interfaces
+
+auto enp0s3
+iface enp0s3 inet dhcp \ static
+address ...
+netmask 255.255.255.240
+gateway ...
+
+> systemctl restart networking
+
+Задание 2: 
+> apt install frr
+> nano /etc/frr/daemons
+
+ospfd=yes
+
+> nano /etc/frr/frr.conf
+
+router ospf
+ospf router-id *внутренний адрес роутера*
+network **** area 0.0.0.0
+...
+
+> systemctl restart frr
+> nano /etc/sysctl.conf
+
+net.ipv4.ip_forward = 1
+
+> sudo sysctl -p
+
+> vtysh
+> show ip ospf route/neighbor
+> exit 
+
+Задание 3:
+> apt install isc-dhcp-server
+> nano /etc/default/isc-dhcp-server
+
+INTERFACESv4="enp0s3"
+
+> nano /etc/dhcp/dhcpd.conf
+
+subnet 20.20.20.0 netmask 255.255.255.240 {
+range 20.20.20.2 20.20.20.10;
+option routers 20.20.20.1;
+}
+
+host server {
+hardware ethernet *mac-адрес*; 
+fixed-address 20.20.20.2;
+}
+
+> systemctl restart isc-dhcp-server
+HQ-SRV - Изменить enp0s3 на режим dhcp
+
+Задание 5:
+> apt install iperf
+> iperf -s
+> iperf -c *адрес где запущена первая команда*
+
+Задание 6:
+> which Script
+> nano Script
+
+vtysh -c 'write'
+cp /etc/frr/frr.config /etc/frr/frr_backup.config
+
+> bash Script
+> nano /etc/frr/frr_backup.config
+
+!Задание 7:
+> apt install openssh-server
+> nano /etc/
+
+Модуль 2:
+Задание 2:
+> apt install ntp
+> nano /etc/ntp.conf
+
+server *адрес сервера где делается*
+# пулы
+
+Модуль 3:
+Задание 1: 
+> apt install rsyslog
+> nano /etc/rsyslog.conf
+
+# убрать TCP и UTP коменты
+
+> systemctl restart rsyslog
+> ss -tunlp | grep 514
+
+Задание 6:
+> apt install cups
+> systemctl start cups
+> sudo lpstat -p -d
