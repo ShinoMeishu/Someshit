@@ -87,7 +87,7 @@ server *адрес сервера где делается*
 > apt install rsyslog
 > nano /etc/rsyslog.conf
 
-# убрать TCP и UTP коменты
+# убрать TCP и UDP комменты (По 2 в каждом)
 
 > systemctl restart rsyslog
 > ss -tunlp | grep 514
