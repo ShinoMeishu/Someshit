@@ -1,0 +1,425 @@
+ 
+
+✔ - точно правильно выполнено
+❌ - не выполнено
+❓ - есть сомнения в правильности
+ 
+Модуль 1
+Настройка сетки:
+ISP	адаптер 1 – внутренняя сеть «ISP-net»
+адаптер 2 – внутренняя сеть – «ISP-HQ»
+адаптер 3 – внутренняя сеть – «ISP-Branch»
+CLI	адаптер 1 – внутренняя сеть «ISP-net»
+HQ-R	адаптер 1 – внутренняя сеть «HQ»
+адаптер 2 – внутренняя сеть – «ISP-HQ»
+HQ-SRV	адаптер 1 – внутренняя сеть «HQ»
+BR-R	адаптер 1 – внутренняя сеть «Branch»
+адаптер 2 – внутренняя сеть – «ISP-Branch»
+BR-SRV	адаптер 1 – внутренняя сеть «Branch»
+
+ISP	HQ-R	BR-R
+1. mcedit /etc/network/interfaces
+auto lo
+iface lo inet loopback
+
+auto enp0s3
+iface enp0s3 inet static
+address 192.168.1.1
+netmask 255.255.255.0
+
+auto enp0s8
+iface enp0s8 inet static
+address 10.1.1.1
+netmask 255.255.255.0
+
+auto enp0s9
+iface enp0s9 inet static
+address 10.1.2.1
+netmask 255.255.255.0	auto lo
+iface lo inet loopback
+
+auto enp0s3
+iface enp0s3 inet static
+address 20.20.20.1
+netmask 255.255.255.192
+
+auto enp0s8
+iface enp0s8 inet static
+address 10.1.1.2
+netmask 255.255.255.0
+	auto lo
+iface lo inet loopback
+
+auto enp0s3
+iface enp0s3 inet static
+address 30.30.30.1
+netmask 255.255.255.240
+
+auto enp0s8
+iface enp0s8 inet static
+address 10.1.2.2
+netmask 255.255.255.0
+
+2. systemctl restart networking.service
+3. mcedit /etc/dhcp/dhcpd.conf
+option domain-name-servers 8.8.8.8;
+
+subnet 192.168.1.0 netmask 255.255.255.0 {
+range 192.168.1.2 192.168.1.200;
+option routers 192.168.1.1;
+}	option domain-name-servers 8.8.8.8;
+
+subnet 20.20.20.0 netmask 255.255.255.192 {
+range 20.20.20.2 
+20.20.20.62;
+option routers 20.20.20.1;
+}	option domain-name-servers 8.8.8.8;
+
+subnet 30.30.30.0 netmask 255.255.255.240 {
+range 30.30.30.2 
+30.30.30.14;
+option routers 30.30.30.1;
+}
+4. mcedit /etc/default/isc-dhcp-server
+INTERFACESv4=”enp0s3”
+5. systemctl restart isc-dhcp-server
+6. apt-get remove --purge 
+--auto-remove nftables -y		6. apt-get remove --purge 
+--auto-remove nftables -y
+7. mcedit /etc/iptables.sh
+
+#!/bin/bash
+export IPT=”iptables”
+
+$IPT -F
+$IPT -F -t nat
+$IPT -F -t mangle
+$IPT -X
+$IPT -t nat -X
+$IPT -t mangle -X
+
+$IPT -P INPUT ACCEPT
+$IPT -P OUTPUT ACCEPT
+$IPT -P FORWARD ACCEPT
+
+/sbin/iptables-save > /etc/iptables.rules		7. mcedit /etc/iptables.sh
+
+#!/bin/bash
+export IPT=”iptables”
+
+$IPT -F
+$IPT -F -t nat
+$IPT -F -t mangle
+$IPT -X
+$IPT -t nat -X
+$IPT -t mangle -X
+
+$IPT -P INPUT ACCEPT
+$IPT -P OUTPUT ACCEPT
+$IPT -P FORWARD ACCEPT
+
+/sbin/iptables-save > /etc/iptables.rules
+8. chmod 0740 /etc/iptables.sh		8. chmod 0740 /etc/iptables.sh
+9. /etc/iptables.sh		9. /etc/iptables.sh
+10. mcedit /etc/network/interfaces
+дописать строчку снизу: 
+post-up iptables-restore < /etc/iptables.rules		10. mcedit /etc/network/interfaces
+дописать строчку снизу: 
+post-up iptables-restore < /etc/iptables.rules
+11. mcedit /etc/frr/daemons
+ospfd=yes
+12. mcedit /etc/frr/frr.conf
+log syslog informational
+router ospf
+ospf router-id 192.168.1.1
+network 10.1.1.0/24 area 0.0.0.0
+network 10.1.2.0/24 area 0.0.0.0
+network 192.168.1.0/24 area 0.0.0.0	log syslog informational
+router ospf
+ospf router-id 20.20.20.1
+network 10.1.1.0/24 area 0.0.0.0
+network 20.20.20.0/26 area 0.0.0.0	log syslog informational
+router ospf
+ospf router-id 30.30.30.1
+network 10.1.2.0/24 area 0.0.0.0
+network 30.30.30.0/28 area 0.0.0.0
+13. mcedit /etc/sysctl.conf
+net.ipv4.ip_forward=1
+14. sysctl -p
+15. перезагрузить все используемые сервисы (frr, networking.service, isc-dhcp-server)
+
+1. а. присвоить имена ✔
+	mcedit /etc/hostname
+b. рассчитать IPv4 и заполнить таблицу ✔
+ISP	192.168.1.1
+CLI	192.168.1.2
+HQ-R	20.20.20.1
+HQ-SRV	20.20.20.2
+HQ-CLI	❓
+HQ-AD	❓
+BR-R	30.30.30.1
+BR-SRV	30.30.30.2
+c. пул адресов для сети Branch – не более 16: ✔
+30.30.30.1/28 (255.255.255.240)
+сеть: 30.30.30.0
+широковещательный: 30.30.30.15
+первый хост: 30.30.30.1, последний: 30.30.30.14
+количество доступных адресов: 16, рабочих адресов для хостов: 14
+d. пул адресов для сети HQ – не более 64: ✔
+20.20.20.1/26 (255.255.255.192)
+сеть: 20.20.20.0
+широковещательный: 20.20.20.63
+первый хост: 20.20.20.1, последний: 20.20.20.62
+количество доступных адресов: 64, рабочих адресов для хостов: 62
+2. внутренняя динамическая маршрутизация по средствам FRR ✔
+	Таблица настройки топологии сети, пункты 11, 12
+3. автоматическое распределение IP-адресов на HQ-R ✔
+	Таблица настройки топологии сети, пункты 3, 4
+	Отдельная настройка 
+apt install isc-dhcp-server
+cp /etc/default/isc-dhcp-server{,_back}
+mcedit /etc/default /isc-dhcp-server
+	DHCPDv4_CONF=/etc/dhcp/dhcpd.conf
+DHCPDv4_PID=/var/run/dhcpd.pid
+	INTERFACESv4=”enp0s3”
+cp /etc/dhcp/dhcpd.conf{,_back}
+mcedit /etc/dhcp/dhcpd.conf
+	option domain-name (hostname)
+option domain-name-servers (10.0.3.2, 10.0.0.197)
+authoritative;
+#не более 16 = 240, не более 64 = 192
+subnet 10.0.2.0 netmask 255.255.255.240 {
+range 10.0.2.1 10.0.2.14;
+option domain-name-servers 10.0.3.2, 10.0.0.197; #DNS для использования, лучше пока DNS нет указать 8.8.8.8
+option domain-name "hostname"; 
+option routers 10.0.2.2; #маршрутизатор или исходящий шлюз
+option broadcast-address 10.0.2.15; #широковещательный
+default-lease-time 900; #время выделения адреса по умолчанию
+max-lease-time 7200; #макс. время в течение которого хост будет исп-ть IP
+}
+получить ip: dhclient
+чтобы зарезирвировать для сервера: ✔
+mcedit /etc/dhcp/dhcpd.conf
+host sample {
+hardware ethernet mac-address;
+fixed-address ip_address;
+}
+systemctl restart isc-dhcp-server.service
+4. добавить локальные учетные записи ✔
+ 
+adduser username
+Не обязательно, дать права админов: usermod –aG sudo username
+5. измерить пропуск. способность по средствам утилиты iperf3 ✔
+apt-get install iperf3
+На сервере: (если ufw скачен): ufw allow 5201/tcp; ufw allow 5201/udp
+iperf -s
+На клиенте: iperf3 -c ip_address_server
+6. backup скрипты для сохранения конфигурации сетевых устройств 
+HQ-R и BR-R: ✔
+apt-get install rsync
+mcedit /etc/default/rsync
+RSYNC_ENABLE=true
+systemctl enable –now rsync
+mkdir –p /backup/br-r
+mkdir /scripts
+mcedit /scripts/br-r_backup.sh
+   
+chmod +x /scripts/br-r_backup.sh
+crontab –e
+ 
+/scripts/br-r_backup.sh
+7. ssh по порту 2222 на HQ-SRV✔
+apt install openssh-server ssh
+systemctl start sshd
+ufw allow ssh (если скачен ufw)
+cp /etc/ssh/sshd_config{,_back}
+mcedit /etc/ssh/sshd_config
+	Port 2222
+systemctl restart sshd
+ssh timur@ip_address_server -p 2222
+8. убрать CLI доступ к HQ-SRV по SSH ❓
+mcedit /etc/ssh/sshd_config
+	DenyUsers  *@192.168.1.*
+systemctl restart sshd
+Модуль 2
+1. DNS сервер. Настроить 2 зоны ❌
+Зона hq.work, также не забудьте настроить обратную зону
+Имя	Тип записи	Адрес
+hq-r.hq.work	A, PTR	IP
+hq-srv.hq.work	A, PTR	IP
+
+Зона branch.work
+Имя	Тип записи	Адрес
+br-r.branch.work	A, PTR	IP
+br-srv.branch.work	A, (PTR??)	IP
+
+2. синхронизация времени по протоколу NTP ❌
+a. в качестве сервера выступает HQ-R со стратумом 5
+b. использовать loopback на HQ-R как источник времени
+c. все остальные устройства и сервера должны синхронизировать время с HQ-R
+d. устройства и сервера настроены на московский часовой пояс (UTC +3)
+
+https://www.dmosk.ru/miniinstruktions.php?mini=ntp-server-ubuntu
+
+3. сервер домена через web интерфейс на HQ-SRV❌
+a. ввести BR-SRV, CLI в домен
+b. отслеживать подключения к домену
+4. файловый сервер SMB на базе HQ-SRV✔
+На сервере:
+apt install samba
+smbpasswd -a username
+mkdir /media/share1
+mcedit /etc/samba/smb.conf
+	[share1]
+		path = /media/share1
+		read only = no
+		guest ok = no
+		valid users = username
+		browseable = yes
+		admin users = username
+systemctl restart smbd.service
+На клиенте: в файлах \\IP_address_server\share1 
+или 
+apt install smbclient –y
+smbclient //IP_address_server/share1 -U username
+5. веб сервер Apache ✔❌
+apt install apache2 -y
+mcedit /etc/apache2/conf-enabled/security.conf
+	ServerTokenks Prod
+	ServerSignature Off
+mcedit /etc/apache2/apache2.conf
+	<Directory /var/www/>
+	Options -Indexes
+	Options FollowSymLinks
+	AllowOverride None
+	Require all granted
+	</Directory>
+systemctl restart apache2
+rm -f /var/www/html/index.html
+echo “Its Timur Nagamadzyanov!”  > /var/www/html/index.html
+6. запустить MediaWiki используя docker на HQ-SRV ❌
+
+Модуль 3
+1. мониторинг по средствам rsyslog на всех Linux хостах ✔
+Клиент:
+apt install rsyslog
+systemctl start/enable/status rsyslog
+ufw disable
+mcedit /etc/rsyslog.conf
+  
+systemctl restart rsyslog
+systemctl status rsyslog (проверяем ошибки)
+Сервер:
+apt install rsyslog
+systemctl start/enable/status rsyslog
+ufw disable
+mcedit /etc/rsyslog.conf
+  
+systemctl restart rsyslog
+systemctl status rsyslog (проверяем ошибки)
+ss -tulnp | grep "rsyslog"
+ls -l /var/log
+ls -l /var/log/название_клиента
+2. 	a. выдайте сертификаты для SSH ❌
+b. выдайте сертификат для веб сервера ❌
+3. Настройте SSH на всех Linux хостах ✔❌
+mcedit /etc/custom_banner
+		Authorized access only!
+mcedit /etc/ssh/sshd_config
+	a. Banner /etc/custom_banner
+	b. PermitRootLogin no
+	c. PasswordAuthentication no
+	d. Port 2222
+	e. MaxAuthTries 4
+	f. PermitEmptyPasswords no
+	g. LoginGraceTime 5m
+	h.
+systemctl restart sshd
+4. антивирусная защита ClamAV на HQ-SRV и BR-SRV ❌
+a. сканирование раз в сутки с сохранением учета
+b. сканирование при условии, что нет нагрузки от пользователя
+5.
+6. виртуальный принтер CUPS на BR-SRV ✔
+	apt-get install cups
+	service cups start
+	В браузере: localhost:631
+		Administration
+		Add Printer
+		Internet Printing Protocol (http)
+		Connection: http://ip_address_br-srv
+		Name: BranchPrinter; Location: Branch Server, Sharing галочку
+		Выбрать модель и драйвер (запомнить)
+
+Administration: Галочку поставить «Share printers connected to this system»
+	На клиенте: Settings > Printers > Add > http://ip_address_br-srv
+7. между офисами HQ и BRANCH защищенный туннель, позволяющий осуществлять связь между ними с применением внутренних адресов ❌
+8. а. Warning ✔
+1) нагрузка процессора больше или равна 70%
+	mcedit /etc/rsyslog.conf
+if ($msg contains ‘CPU load average is above 70’) then /var/log/warning.log
+	touch /var/log/warning.log
+	systemctl restart rsyslog
+	Предупреждение будет занесено в /var/log/warning.log
+2) нагрузка оперативной памяти больше или равна 80%
+	mcedit /etc/rsyslog.conf
+		module(load=”imuxsock”)
+
+		в конце файла:
+if (($msg contains ‘warning’ and) and ($msg contains ‘memory usage is greater than or equal to 80%’)) then {
+action(type=”omfile” file=”/var/log/warning_memory.log”)
+}
+	touch /var/log/warning_memory.log
+	systemctl restart rsyslog
+	Предупреждение будет занесено в /var/log/warning_memory.log
+3) заполненность диска больше или равна 85%
+mcedit /etc/rsyslog.conf
+		module(load=”imuxsock”)
+
+		в конце файла:
+if (($msg contains ‘warning’ and) and ($msg contains ‘disk usage is greater than or equal to 85%’)) then {
+action(type=”omfile” file=”/var/log/warning_disk.log”)
+}
+	touch /var/log/warning_memory.log
+	systemctl restart rsyslog
+	Предупреждение будет занесено в /var/log/warning_disk.log
+9. RAID 5 из дисков по 1 Гб которые подключены к BR-SRV ✔
+apt install mdadm
+Убедитесь, что утилита установлена:
+sudo mdadm –V
+Определение существующих дисков
+Lsblk или fdisk –l
+ 
+Чтобы создать массив RAID 5 
+sudo mdadm --create --verbose /dev/md0 --level=5 --raid-devices=3 /dev/sdb 
+/dev/sdc /dev/sdd
+Вы можете отслеживать ход зеркалирования в файле /proc/mdstat:
+ 
+Создайте в массиве файловую систему:
+sudo mkfs.ext4 -F /dev/md0
+Создайте точку монтирования:
+sudo mkdir -p /mnt/md0
+А затем смонтируйте файловую систему:
+sudo mount /dev/md0 /mnt/md0
+Убедитесь, что новое пространство доступно:
+df -h -x devtmpfs -x tmpfs
+ 
+Вы можете автоматически сканировать активный массив и добавить данные в файл:
+sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf
+После этого вы можете обновить initramfs, чтобы массив был доступен во время загрузки:
+sudo update-initramfs -u
+Добавьте новые параметры монтирования файловой системы в файл 
+/etc/fstab для поддержки автоматического монтирования при загрузке:
+echo '/dev/md0 /mnt/md0 ext4 defaults,nofail,discard 0 0' | sudo tee -a 
+/etc/fstab
+Теперь массив RAID 5 будет автоматически смонтирован при загрузке 
+системы.
+Проверяем работу с помощью
+Cat /proc/mdstat
+ 
+10. Bacula на HQ-SRV для резервного копирования etc сервера BR-SRV ❌
+
+
+
+?
+3: нужно ли для HQ-R и HQ-SRV применять автоматическое распределение или можно им задать статики, а роутер уже будет автоматически распределять айпишники для других устройств этой сети
+7: «Учтите, что вам необходимо перенаправить трафик на этот порт по средствам контролирования трафика.»
