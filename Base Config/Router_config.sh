@@ -59,7 +59,7 @@ sudo iptables -A POSTROUTING -t nat -j MASQUERADE
 echo "iptables configured"
 
 #Ipv4 forwarding
-sudo sysctl -w net.ipv4.ip_forward=1
+echo "net.ipv4.ip_forward=1" > /etc/sysctl.conf
 echo "Ipv4_forwarding configured"
 systemctl restart networking
 
