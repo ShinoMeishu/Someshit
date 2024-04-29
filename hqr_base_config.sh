@@ -6,7 +6,7 @@ INT1="ens33"
 INT2="ens36"
 ADD1="2.2.2.2/30"
 GATE1="2.2.2.1"
-ADD2="10.2.2.1/28"
+ADD2="10.2.2.1/26"
 
 echo -e "source /etc/network/interfaces.d/*" > /etc/network/interfaces
 echo -e "#The loopback network interface\nauto lo\niface lo inet loopback\n" >> /etc/network/interfaces
