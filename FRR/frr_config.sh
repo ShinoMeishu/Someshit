@@ -11,7 +11,7 @@ echo -e "router ospf 1\n ospf router-id 10.1.1.1\n redistribute connected\n netw
 echo "OSPF set for ISP";
 fi;
 if [ "$H" == "HQ-R" ]; then
-echo -e "router ospf 1\n ospf router-id 20.1.1.1\n redistribute connected\n network 20.1.1.0/26 arae 0.0.0.0\n network 1.1.1.0/30 area 0.0.0.0\n network 3.3.3.0/30 area 0.0.0.0" > /etc/frr/frr.conf
+echo -e "router ospf 1\n ospf router-id 20.1.1.1\n redistribute connected\n network 20.1.1.0/26 area 0.0.0.0\n network 1.1.1.0/30 area 0.0.0.0\n network 3.3.3.0/30 area 0.0.0.0" > /etc/frr/frr.conf
 echo "OSPF set for HQ-R";
 fi;
 if [ "$H" == "BR-R" ]; then
