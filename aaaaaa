@@ -1,0 +1,6 @@
+#!/bin/bash
+rm -r git/
+wget ...
+unzip master.zip
+mv Someshit-main/ git/
+rm master.zip
