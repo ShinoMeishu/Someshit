@@ -1,1 +1,7 @@
-
+#!/bin/bash
+apt install frr -y
+#Configuration for Vtysh and ospfd daemon
+chmod 777 /etc/frr/daemons
+chown frr /etc/frr/daemon
+chmod 777 /etc/pam.d/frr
+sed -i 's/ospfd=no/ofspfd=yes/' /etc/frr/daemons
