@@ -4,4 +4,4 @@ apt install frr -y
 chmod 777 /etc/frr/daemons
 chown frr /etc/frr/daemons
 chmod 777 /etc/pam.d/frr
-sed -i 's/ospfd=no/ofspfd=yes/' /etc/frr/daemons
+sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
