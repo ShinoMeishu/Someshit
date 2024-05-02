@@ -15,6 +15,8 @@ NET12="1.1.1"
 NET13="2.2.2"
 NET23="3.3.3"
 
+apt update -y && apt upgrade -y
+apt install iptables -y
 if [ "$H" == "ISP" ]; then
 echo -e "source /etc/network/interfaces.d/*" > /etc/network/interfaces
 echo -e "#The loopback network interface\nauto lo\niface lo inet loopback\n" >> /etc/network/interfaces
