@@ -1,0 +1,143 @@
+# Module 2
+# task 1
+
+apt install bind9 bind9-utils -y
+
+
+nano /etc/bind/named.conf
+
+include "/etc/bind/named.conf.options";
+include "/etc/bind/named.conf.local";
+include "/etc/bind/named.conf.default-zones";
+include "/etc/bind/named.conf.internal-zones";
+
+nano /etc/bind/named.conf.options
+
+acl internal-network {
+	20.20.20.0/26;
+};
+acl branch {
+	30.30.30.0/28;
+};
+options {
+
+	directory "/var/cache/bind";
+	allow-query { localhost; internal-network; branch; };
+	allow-transfer { localhost; };
+	recursion yes;
+	dnssec-validation auto;
+	listen-on { any; };
+	listen-on-v6 { any; };
+};
+
+nano /etc/bind/named.conf.internal-zones
+
+zone "hq.work" IN {
+	type master;
+	file "/etc/bind/hq.work.lan";
+	allow-update { none; };
+};
+zone "20.20.20.in-addr.arpa" IN {
+	type master;
+	file "etc/bind/20.20.20.db";
+	allow-update { none; };
+};
+zone "branch.work" IN {
+	type master;
+	file "/etc/bind/branch.work.lan";
+	allow-update { none; };
+};
+zone "30.30.30.in-addr.arpa" IN {
+	type master;
+	file "etc/bind/30.30.30.db";
+	allow-update { none; };
+};
+
+nano /etc/bind/hq.work.lan
+
+$TTL 86400
+@ IN SOA hq-srv.hq.work. root.hq.work. (
+	2024050301 ;Serial
+	3600       ;Refresh
+	1800       ;Retry
+	604800	   ;Expire
+	86400	   ;Minimum TTL
+)
+	IN NS 	hq-srv.hq.work.
+	IN A	20.20.20.2
+	IN MX 10 hq-srv.hq.work.
+
+hq-srv	IN A 	20.20.20.2
+hq-r	IN A	20.20.20.1
+
+nano /etc/bind/20.20.20.db
+
+$TTL 86400
+@ IN SOA hq-srv.hq.work. root.hq.work. (
+        2024050301 ;Serial
+        3600       ;Refresh
+        1800       ;Retry
+        604800     ;Expire
+        86400      ;Minimum TTL
+)
+          IN NS   hq-srv.hq.work.
+
+2	  IN PTR    hq-srv.hq.work.
+1	  IN PTR    hq-r.hq.work.
+
+nano /etc/bind/branch.work.lan
+
+$TTL 86400
+@ IN SOA hq-srv.hq.work. root.hq.work. (
+	2024050301 ;Serial
+	3600       ;Refresh
+	1800       ;Retry
+	604800	   ;Expire
+	86400	   ;Minimum TTL
+)
+	IN NS 	hq-srv.hq.work.
+	IN A	20.20.20.2
+	IN MX 10 hq-srv.hq.work.
+
+hq-srv	IN A 	20.20.20.2
+hq-r	IN A	20.20.20.1
+
+nano /etc/bind/30.30.30.db
+
+$TTL 86400
+@ IN SOA hq-srv.hq.work. root.hq.work. (
+        2024050301 ;Serial
+        3600       ;Refresh
+        1800       ;Retry
+        604800     ;Expire
+        86400      ;Minimum TTL
+)
+          IN NS   hq-srv.hq.work.
+
+2	  IN PTR    br-srv.branch.work.
+1	  IN PTR    br-r.branch.work.
+
+nano /etc/resolv.conf
+
+domain hq.work
+search hq.work
+nameserver 20.20.20.2
+
+systemctl restart named
+sudo named-checkconf
+dig hq-r.hq.work
+dix -x 20.20.20.1
+dig br-r.branch.work
+dix -x 30.30.30.1
+
+# task 2
+
+apt install ntp
+
+nano /etc/ntp.conf
+
+#(Везде, кроме HQ-R)
+
+server 20.20.20.1
+# пулы
+
