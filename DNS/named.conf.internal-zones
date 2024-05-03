@@ -1,0 +1,20 @@
+zone "hq.work" IN {
+	type master;
+	file "/etc/bind/hq.work.lan";
+	allow-update { none; };
+};
+zone "20.20.20.in-addr.arpa" IN {
+	type master;
+	file "etc/bind/20.20.20.db";
+	allow-update { none; };
+};
+zone "branch.work" IN {
+	type master;
+	file "/etc/bind/branch.work.lan";
+	allow-update { none; };
+};
+zone "30.30.30.in-addr.arpa" IN {
+	type master;
+	file "etc/bind/30.30.30.db";
+	allow-update { none; };
+};
