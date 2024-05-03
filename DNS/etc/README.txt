@@ -5,6 +5,7 @@ sudo named-checkconf
 Если ничего не пишется - все сделано верно
 dig hq-r.hq.work
 dix -x 20.20.20.1
+systemctl enable named
 
 Если написалась какая-то ошибка, то:
 Я ТАК СДЕЛАЛ БЛЯТЬ
