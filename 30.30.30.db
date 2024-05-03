@@ -1,0 +1,15 @@
+$TTL 86400
+@ IN SOA hq-srv.hq.work. root.hq.work. (
+        2024050301 ;Serial
+        3600       ;Refresh
+        1800       ;Retry
+        604800     ;Expire
+        86400      ;Minimum TTL
+)
+          IN NS   hq-srv.hq.work.
+
+2	  IN PTR    br-srv.branch.work.
+1	  IN PTR    br-r.branch.work.
+
+
+
