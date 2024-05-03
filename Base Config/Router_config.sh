@@ -56,6 +56,8 @@ sudo iptables -t mangle -F
 sudo iptables -F
 sudo iptables -A POSTROUTING -t nat -j MASQUERADE
 
+#Save iptables config
+sudo apt install iptables-persistent -y
 echo "iptables configured"
 
 #Ipv4 forwarding
