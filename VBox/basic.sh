@@ -25,7 +25,7 @@ if [ "$H" == "HQ-R" ]; then
 echo -e "source /etc/network/interfaces.d/*" > /etc/network/interfaces
 echo -e "#The loopback network interface\nauto lo\niface lo inet loopback\n" >> /etc/network/interfaces
 echo -e "#Subnet ISP-HQ\nauto $INT1\niface $INT1 inet static\naddress 1.1.1.2/30\ngateway 1.1.1.1\n" >> /etc/network/interfaces
-echo -e "#Subnet HQ\nauto $INT3\niface $INT3 inet static\naddress 20.20.20.1/26"  >> /etc/network/interfaces
+echo -e "#Subnet HQ\nauto $INT2\niface $INT2 inet static\naddress 20.20.20.1/26"  >> /etc/network/interfaces
 NUM=3
 echo "Added addresses for HQ Router";
 fi;
@@ -34,7 +34,7 @@ if [ "$H" == "BR-R" ]; then
 echo -e "source /etc/network/interfaces.d/*" > /etc/network/interfaces
 echo -e "#The loopback network interface\nauto lo\niface lo inet loopback\n" >> /etc/network/interfaces
 echo -e "#Subnet ISP-BR\nauto $INT1\niface $INT1 inet static\naddress 2.2.2.2/30\ngateway 2.2.2.1\n" >> /etc/network/interfaces
-echo -e "#Subnet BR\nauto $INT3\niface $INT3 inet static\naddress 30.30.30.1/28"  >> /etc/network/interfaces
+echo -e "#Subnet BR\nauto $INT2\niface $INT2 inet static\naddress 30.30.30.1/28"  >> /etc/network/interfaces
 NUM=3
 echo "Added addresses for BR Router";
 fi;
