@@ -39,6 +39,8 @@ NUM=3
 echo "Added addresses for BR Router";
 fi;
 
+systemctl restart networking
+
 #iptables install, flush and add
 apt install iptables -y
 sudo iptables -P INPUT ACCEPT
